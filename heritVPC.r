@@ -17,5 +17,8 @@ herit.vpc.params <- function(x, ...) {
   ...
 }
 
+extract_params <- function(x) {
+}
+
 fitted_model_obj <- structure(list(), class = "fitted_model")
 params_obj <- structure(list(), class = "params")
