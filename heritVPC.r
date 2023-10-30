@@ -37,6 +37,7 @@ herit.vpc.fitted_model <- function(modelObj, X, Z=NULL) {
   herit.vpc.default(X, Z, beta, Sigma, phi, family, g_inv.dist)
 }
 
+# this methods computes the actual vpc for a specified family using the right variance mean function
 vpc_compute <- function(mu, sigm, phi, g_inv.dist, family, p=NULL) {
 
     if(g_inv.dist == "log") {
