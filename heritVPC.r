@@ -1,8 +1,8 @@
-herit.vpc <- function(x, ...) {
-  UseMethod("my_function", x)
+herit.vpc <- function(X, Z=NULL, ...) {
+  UseMethod("herit.vpc", x)
 }
 
-herit.vpc.default <- function(x, ...) {
+herit.vpc.default <- function(X, Z=NULL, ...) {
   stop("Unsupported input type")
 }
 
