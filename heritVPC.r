@@ -97,6 +97,3 @@ vpc_compute <- function(mu, sigm, phi, family, link, p=NULL) {
            }
     )
 }
-
-heritMod_obj <- structure(list(), class = "heritMod")
-params_obj <- structure(list(), class = "params")
