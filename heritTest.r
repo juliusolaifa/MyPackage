@@ -2,22 +2,12 @@ herit.test <- function(object, ...) {
   UseMethod("herit.test", object)
 }
 
-herit.test.heritScore <- function(object, ...) {
-  # Your implementation for heritScore objects
-  cat("Running herit.test on a heritScore object\n")
-  
-  # You can access the heritability and the model object like this:
-  heritability <- object$heritability
-  modObj <- object$modObj
-  
-  # Add your test implementation here
-  # ...
-
-  # Return the results
-  return(list(test_results = "Results of your test"))
+herit.test.heritScore <- function(scoreObj, new_formula) {
+  modObj <- scoreObj$modObj
+  return(herit.test.heritMod(modObj,new_formula))
 }
 
-herit.test.heritMod <- function(modObj, new_formula = NULL) {
+herit.test.heritMod <- function(modObj, new_formula) {
   modObj_extract <- modObj$modObj
   L_H1 <- modObj$logLikelihood
   total_par <- modObj$npar
@@ -36,4 +26,7 @@ herit.test.heritMod <- function(modObj, new_formula = NULL) {
 
   # Return the results
   return(list(test_results = "Results of your test"))
+}
+
+compute_chisq_critical <- function() {
 }
