@@ -1,3 +1,25 @@
+# obtain heritability score
+herit.score <- function(data, formula, X, Z=NULL, family = nbinom2, REML = TRUE) {
+  fitmod <- herit.fit(data, formula, family = family, REML = REML)
+  herit <- herit.vpc(fitmod, X, Z)
+  return(herit)
+}
+
+# fit a glmm
+herit.fit <- function(data, formula, family, REML) {
+    modObj <- glmmTMB(formula = formula, data = data, family = family, REML = REML)
+    groupVar <- modObj$modelInfo$grpVar
+    link <- modObj$modelInfo$family$link
+    beta <- fixef(modObj)$cond
+    std <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "stddev")
+    corr <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "correlation")
+    phi <- sigma(modObj)
+    Sigma <- corr*(std %*% std)
+    result <- list("beta" = beta, "Sigma" = Sigma, "phi" = phi, "family" = family, "link" = link)
+    class(result) <- "heritMod"
+    return(result)
+}
+
 # Define the generic function
 herit.vpc <- function(X, Z=NULL, beta, Sigma, phi, family, link) {
   UseMethod("herit.vpc")
@@ -24,8 +46,8 @@ herit.vpc.default <- function(X,Z=NULL,beta,Sigma,phi,family,link) {
     return(vpc_compute(mu, sigm, phi, family, link))
 }
 
-# Define the method for fitted_model input
-herit.vpc.fitted_model <- function(modelObj, X, Z=NULL) {
+# Define the method for heritMod input
+herit.vpc.heritMod <- function(modelObj, X, Z=NULL) {
   # Extract parameters from the fitted model object
   beta <- modelObj$coefficients$beta
   Sigma <- modelObj$coefficients$Sigma
@@ -71,5 +93,5 @@ vpc_compute <- function(mu, sigm, phi, family, link, p=NULL) {
     )
 }
 
-fitted_model_obj <- structure(list(), class = "fitted_model")
+heritMod_obj <- structure(list(), class = "heritMod")
 params_obj <- structure(list(), class = "params")
