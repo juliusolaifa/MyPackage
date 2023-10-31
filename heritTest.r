@@ -24,6 +24,9 @@ herit.test.heritMod <- function(modObj, new_formula) {
   nvarcomp_on_boundary <- npar_bounded - npar_reduced_bounded
   likStat <- -2*(L_H0 - L_H1)
 
+  ###
+  critical_value <- compute_chisq_critical()
+  p_value <- 
   # Return the results
   return(list(test_results = "Results of your test"))
 }
