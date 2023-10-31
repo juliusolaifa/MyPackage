@@ -2,7 +2,8 @@
 herit.score <- function(data, formula, X, Z=NULL, family = nbinom2, REML = TRUE) {
   fitmod <- herit.fit(data, formula, family = family, REML = REML)
   herit <- herit.vpc(fitmod, X, Z)
-  return(structure(list("heritability"=herit, "modObj"=fitmod$modObj), class="heritScore"))
+  return(structure(list("heritability"=herit, "npar"=npar, "nfixef"=nfixef, 
+                        "logLikelihood"=logLike,"modObj"=fitmod$modObj), class="heritScore"))
 }
 
 # fit a glmm
@@ -15,7 +16,11 @@ herit.fit <- function(data, formula, family, REML) {
     corr <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "correlation")
     phi <- sigma(modObj)
     Sigma <- corr*(std %*% std)
-    result <- list("beta"=beta, "Sigma"=Sigma, "phi"=phi, "family"=family, "link"=link, "modObj"=modObj)
+    nfixef <- length(c(beta,phi))
+    logLike <- as.numeric(logLik(modObj))
+    npar <- attr(logLik(modObj), "df")
+    result <- list("beta"=beta, "Sigma"=Sigma, "phi"=phi, "family"=family, 
+                   "link"=link, "npar"=npar, "nfixef"=nfixef, "logLikelihood"=logLike, "modObj"=modObj)
     class(result) <- "heritMod"
     return(result)
 }
