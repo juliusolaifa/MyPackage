@@ -16,7 +16,7 @@ confint.heritScore <- function(object, parm, level = 0.95, ...) {
   return(result)
 }
 
-confint.heritMod <- function(object, parm, level = 0.95, ...) {
+confint.default <- function(object, parm, level = 0.95, ...) {
   # Extract the model parameters from the object
   beta <- object$beta
   Sigma <- object$Sigma
