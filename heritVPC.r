@@ -1,10 +1,10 @@
 # Define the generic function
-herit.vpc <- function(X, Z=NULL, beta, Sigma, phi, family, g_inv.dist) {
+herit.vpc <- function(X, Z=NULL, beta, Sigma, phi, family, link) {
   UseMethod("herit.vpc")
 }
 
 # Define the default method (direct parameter input)
-herit.vpc.default <- function(X,Z=NULL,beta,Sigma,phi,family,g_inv.dist) {
+herit.vpc.default <- function(X,Z=NULL,beta,Sigma,phi,family,link) {
     if(is.null(Z)) {
         Z = X
     }
@@ -21,7 +21,7 @@ herit.vpc.default <- function(X,Z=NULL,beta,Sigma,phi,family,g_inv.dist) {
     
     mu <- X%*%beta
     sigm <- Z%*%Sigma%*%Z
-    return(vpc_compute(mu, sigm, phi, family, g_inv.dist))
+    return(vpc_compute(mu, sigm, phi, family, link))
 }
 
 # Define the method for fitted_model input
@@ -31,16 +31,16 @@ herit.vpc.fitted_model <- function(modelObj, X, Z=NULL) {
   Sigma <- modelObj$coefficients$Sigma
   phi <- modelObj$coefficients$phi
   family <- modelObj$family
-  g_inv.dist <- modelObj$g_inv.dist
+  link <- modelObj$link
   
   # Call the default method with extracted parameters
-  herit.vpc.default(X, Z, beta, Sigma, phi, family, g_inv.dist)
+  herit.vpc.default(X, Z, beta, Sigma, phi, family, link)
 }
 
 # this methods computes the actual vpc for a specified family using the right variance mean function
-vpc_compute <- function(mu, sigm, phi, g_inv.dist, family, p=NULL) {
+vpc_compute <- function(mu, sigm, phi, family, link, p=NULL) {
 
-    if(g_inv.dist == "log") {
+    if(link == "log") {
         inv.mu <- exp(mu + sigm/2)
         inv.var <- (exp(sigm) - 1)*exp(2*mu + sigm)
     }
