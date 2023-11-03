@@ -72,9 +72,6 @@ vpc_compute <- function(mu, sigm, phi, family, link, p=NULL) {
         inv.var <- (exp(sigm) - 1)*exp(2*mu + sigm)
     }
     switch(family,
-           nbimom1={
-               return(inv.var / (inv.var + inv.mu + phi*inv.mu))
-           }
            nbinom2={
                inv.mu.p <- exp(2*mu + 4*sigm/2)
                return(inv.var / (inv.var + inv.mu + inv.mu.p/phi))
