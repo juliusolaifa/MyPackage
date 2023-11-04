@@ -19,7 +19,7 @@ herit.glmmdata <- function(x, beta, sigma.u, cluster.sizes, family, ...) {
            #compois=function() COMPoissonReg::rcmp(n=n, lambda, nu, control = NULL)
            #genpois=function() HMMpa::rgenpois(n=n, lambda1, lambda2)
            stop("data generation not implemented for family: ", family))
-  y <- mapply(generate, n=cluster.sizes, mu=cond_means, ...)
+  y <- unlist(mapply(generate, n=cluster.sizes, mu=cond_means, ...))
   return(y)
   #result <- structure(list("x" = x, "y" = y, "family" = family), class = "heritData")
   #return(result)
