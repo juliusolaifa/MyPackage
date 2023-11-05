@@ -5,8 +5,8 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
   x <- model.matrix(~x)
   u <- mvrnorm(n=length(cluster.sizes), mu=rep(0,ncol(sigma.u)), Sigma = sigma.u)
   group <- factor(rep(1:length(cluster.sizes), cluster.sizes))
-  z <- model.matrix(~ 0 + group)
-  z <- do.call(cbind, lapply(1:ncol(u), function(i) z * x[, i]))
+  z0 <- model.matrix(~ 0 + group)
+  z <- do.call(cbind, lapply(1:ncol(u), function(i) z0 * x[, i]))
 
   total_observations <- sum(cluster.sizes)
   y_matrix <- matrix(nrow=iter, ncol=total_observations)
@@ -45,7 +45,7 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
       y_matrix[i, ] <- generate()#y
   }
 
-  result <- structure(list("x" = x, "y" = y_matrix, "family" = family, "cluster" = cluster_assignments), class = "heritData")
+  result <- structure(list("x" = x, "z" = z, "y" = y_matrix, "family" = family, "cluster" = cluster_assignments), class = "heritData")
   return(result)
 }
 
