@@ -33,8 +33,8 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
            },
            # genpois={
            #   #HMMpa::rgenpois
-           #   lambda1 <- lapply(cond_means, function(cm) cm / (1 - args$lambda2))
-           #   function() unlist(mapply(HMMpa::rgenpois, n=cluster.sizes, lambda1=lambda1, args$lambda2))
+           #   lambda1 <- unlist(sapply(cond_means, function(cm) cm *(1 - args$lambda2)))
+           #   function() unlist(mapply(HMMpa::rgenpois, n=cluster.sizes, lambda1, args$lambda2))
            # },
            stop("data generation not implemented for family: ", family)
   )
@@ -50,25 +50,28 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
 }
 
 print.heritData <- function(dataObj) {
-  nx <- (ncol(dataObj$x))-1
+cat("Family:", dataObj$family, "\n")
+  
+  nx <- (ncol(dataObj$x)) - 1
   datamat <- rbind(t(dataObj$x), dataObj$y)
   colnames(datamat) <- dataObj$cluster
   rownames(datamat) <- c(paste0('x', 0:nx), paste0('gene', 1:nrow(dataObj$y)))
-  return(datamat)
+  
+  print(datamat)
 }
 
 # Example
-x <- c(23,24,25,26,29,30)
+x <- c(23,24,25,26,29,30,18,22,21,16,18,16,21)
 beta <- c(7,9)
-sigma.u <- 3#matrix(c(2,1,1,2),2)
-cluster.sizes <- c(3,2,1)
+sigma.u <- matrix(c(2,1,1,2),2)
+cluster.sizes <- c(3,2,5,3)
 theta = 2
 phi = 2
 power = 1.6
 nu = 3
 lambda2 = 0.7
-iter =1
+iter =10
 data1 <- herit.glmmdata(iter, x, beta, sigma.u, cluster.sizes, "nbinom2", theta=theta)
 data2 <- herit.glmmdata(iter, x, beta, sigma.u, cluster.sizes, "tweedie", phi=phi, power=power)
 data3 <- herit.glmmdata(iter, x, beta, sigma.u, cluster.sizes, "compois", nu=nu)
-# herit.glmmdata(iter, x, beta, sigma.u, cluster.sizes, "genpois", lambda2=lambda2)
+#data4 <- herit.glmmdata(iter, x, beta, sigma.u, cluster.sizes, "genpois", lambda2=lambda2)
