@@ -38,5 +38,5 @@ bivarnormcdf <- function(sigma, lower="-Inf", upper=Inf, inner_lower="-Inf", inn
     return(result$value)
 }
 mat <- matrix(c(4,2,2,3),2)
-bivarnormcdf(mat, lower=0, upper=Inf, inner_lower=0, inner_upper=Inf)
-#bivarnormcdf(mat, lower="a*x1", upper=Inf, inner_lower=-Inf, inner_upper=0)
+bivarnormcdf(mat, lower=-Inf, upper=0, inner_lower="a*x1", inner_upper=Inf)
+bivarnormcdf(mat, lower="a*x1", upper=Inf, inner_lower=-Inf, inner_upper=0)
