@@ -1,26 +1,22 @@
-vcov.VarCorr.merMod <- function(object,fit,...) {
+vcov2 <- function(modObj) {
+    beta <- unname(modObj$coefficients)
+    sigma_chol <- GLMMadaptive:::chol_transf(modObj$D)
+    phis <- unname(modObj$phis)
+    theta_chol <- c(beta, sigma_chol, phis)
+
+    sigma_f_ind <- length(beta) + 1
+    sigma_l_ind <- length(beta) + length(sigma_chol)
     
-    if (isREML(fit)) {
-        warning("refitting model with ML")
-        fit <- refitML(fit)
+    chol_tocov <- function(theta) {
+        sigma <- theta[sigma_f_ind:sigma_l_ind]
+        sigma <- GLMMadaptive:::chol_transf(sigma)
+        sigma <- sigma[upper.tri(sigma, diag = TRUE)]
+        theta[sigma_f_ind:sigma_l_ind] <- sigma
+        theta
     }
-    if (!require("numDeriv")) stop("numDeriv package required")
-    useSc <- attr(object,"useSc")
-    print(useSc)
-    dd <- lme4:::devfun2(fit,useSc=useSc,signames=FALSE)
-    vdd <- as.data.frame(object,order="lower.tri")
-    pars <- vdd[,"sdcor"]
-    npar0 <- length(pars)
-    if (isGLMM(fit)) {
-        pars <- c(pars,lme4::fixef(fit))
-    }
-    hh1 <- hessian(dd,pars)
-    vv2 <- 2*solve(hh1)
-    if (isGLMM(fit)) {
-        vv2 <- vv2[1:npar0,1:npar0,drop=FALSE]
-    }
-    nms <- apply(vdd[,1:3],1,
-                 function(x) paste(na.omit(x),collapse="."))
-    dimnames(vv2) <- list(nms,nms)
-    return(vv2)
+    
+    J <- numDeriv::jacobian(chol_tocov, theta_chol)
+    V_chol <- vcov(modObj)
+    V <- J %*% V_chol %*% t(J)
+    V
 }
