@@ -4,8 +4,10 @@ vcov2 <- function(modObj) {
     phis <- unname(modObj$phis)
     theta_chol <- c(beta, sigma_chol, phis)
 
-    sigma_f_ind <- length(beta) + 1
-    sigma_l_ind <- length(beta) + length(sigma_chol)
+    nbeta <- length(beta)
+    nsigma <- length(sigma_chol)
+    sigma_f_ind <- nbeta + 1
+    sigma_l_ind <- nbeta + nsigma 
     
     chol_tocov <- function(theta) {
         sigma <- theta[sigma_f_ind:sigma_l_ind]
@@ -19,11 +21,32 @@ vcov2 <- function(modObj) {
     V_chol <- vcov(modObj)
     V <- J %*% V_chol %*% t(J)
     dimnames(V) <- dimnames(V_chol)
-    V
+    theta <- chol_tocov(theta_chol)
+    
+    return(list("V" = V, "theta" = theta, "sigma_f_ind" = sigma_f_ind, "nsigma" = nsigma))
 }
 
 vcov.heritMod <- function(modObj) {
     V <- vcov2(modObj)
+    theta <- V$theta
+    nsigma <- V$nsigma
+    sigma_f_ind <- V$sigma_f_ind
+    V <- V$V
+    
+    
+    if (nsigma == 1) {
+        V1 <- V2 <- V
+        V2[sigma_f_ind, ] <- V2[, sigma_f_ind] <- 0
+        pi_1 <- 1; pi_2 <- 0.5
+        return(pi_1V1 + pi_2*V2)
+    } else if(nsigma== 3) {
+        pi_1 <- 0.25; pi_2 <- 0.25; pi_3 <- 0.25; pi_4 <- 0.25
+        V1 <- V2 <- V3 <- V4 <- V
+        V2[sigma_f_ind, ] <- V2[, sigma_f_ind] <- 0
+        V3[c(sigma_f_ind+2), ] <- V3[, c(sigma_f_ind+2)] <- 0
+        V4[c(sigma_f_ind,sigma_f_ind+2), ] <- V4[,c(sigma_f_ind,sigma_f_ind+2)] <- 0
+        return(pi_1*V1 + pi_2*V2 + pi_3*V3 + pi_4*V4)
+    }
 }
 
 confint.heritMod <- function() {
