@@ -44,7 +44,7 @@ vcov.heritMod <- function(modObj) {
         V4[c(sigma_f_ind,sigma_f_ind+2), ] <- V4[,c(sigma_f_ind,sigma_f_ind+2)] <- 0
         V.combine <- pi_1*V1 + pi_2*V2 + pi_3*V3 + pi_4*V4
     }
-    delta(theta,V.combine,****) 
+    list("theta" = theta, "V.combine" = V.combine)
 }
 
 delta <- function(estimates, cov_matrix, transformation) {
@@ -60,5 +60,16 @@ delta <- function(estimates, cov_matrix, transformation) {
     }
 }
 
-confint.heritMod <- function() {
+confint.heritMod <- function(heritVpc, level) {
+    h2 <- heritVPC$h2
+    
+    theta <- heritVpc$theta
+    V.combine <- heritVpc$V.combine
+    #V.herit <- delta(theta,V.combine,herit.Vpc) 
+    
+    err_margin <- abs(sqrt(V.herit)*qnorm((1-level)/2))
+    lower_cl <- h2 - err_margin
+    upper_cl <- h2 + err_margin
+    C.I <- matrix(c(lower_cl, h2, upper_cl))
+    colnames(C.I) <- c("lower", "estimate", "upper"))
 }
