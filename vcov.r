@@ -18,5 +18,13 @@ vcov2 <- function(modObj) {
     J <- numDeriv::jacobian(chol_tocov, theta_chol)
     V_chol <- vcov(modObj)
     V <- J %*% V_chol %*% t(J)
+    dimnames(V) <- dimnames(V_chol)
     V
+}
+
+vcov.heritMod <- function(modObj) {
+    V <- vcov2(modObj)
+}
+
+confint.heritMod <- function() {
 }
