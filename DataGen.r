@@ -46,8 +46,13 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
   }
 
   result <- structure(list("x" = x, "z" = z, "y" = y_matrix, "family" = family, "cluster" = cluster_assignments), class = "heritData")
-  return(result)
+  result
 }
+
+# indexing method for `heritData` class
+"[.heritData" <- function(dataObj, i) {
+    as.data.frame(dataObj$x, dataObj$y)
+  }
 
 print.heritData <- function(dataObj) {
 cat("Family:", dataObj$family, "\n")
