@@ -9,6 +9,8 @@ herit.score <- function(data, formula, X, Z=NULL, family = nbinom2, REML = TRUE)
 # fit a glmm
 herit.fit <- function(fixed, random, data, family) {
     modObj <- GLMMadaptive::mixed_model(fixed, random, data, family)
+    beta <- fixef(modObj)
+    
     # groupVar <- modObj$modelInfo$grpVar
     # link <- modObj$modelInfo$family$link
     # beta <- fixef(modObj)$cond
@@ -23,6 +25,7 @@ herit.fit <- function(fixed, random, data, family) {
     #                "link"=link, "nfixef"=nfixef, "nvarcomp_bounded"=nvarcomp_bounded, "logLikelihood"=logLike, "modObj"=modObj)
     # class(result) <- "heritMod"
     # return(result)
+  return(modObj)
 }
 
 # Define the generic function
