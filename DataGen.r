@@ -11,7 +11,8 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
   total_observations <- sum(cluster.sizes)
   y_matrix <- matrix(nrow=iter, ncol=total_observations)
 
-  cluster_assignments <- rep(paste0("strain", 1:length(cluster.sizes)), times=cluster.sizes)
+  cluster_names <- paste0("cluster", 1:length(cluster.sizes))
+  cluster_assignments <- rep(cluster_names, times=cluster.sizes)
   cluster_assignments <- factor(cluster_assignments)
                               
   #split conditional means into list according to group
@@ -50,9 +51,9 @@ herit.glmmdata <- function(iter, x, beta, sigma.u, cluster.sizes, family, ...) {
 }
 
 # indexing method for `heritData` class
-"[.heritData" <- function(dataObj, i) {
-    as.data.frame(dataObj$x, dataObj$y)
-  }
+"[.heritData" <- function(dataObj, i, ...) {
+    data.frame(dataObj$x, cluster = dataObj$cluster, y = dataObj$y[i,])
+}
 
 print.heritData <- function(dataObj) {
 cat("Family:", dataObj$family, "\n")
@@ -60,10 +61,36 @@ cat("Family:", dataObj$family, "\n")
   nx <- (ncol(dataObj$x)) - 1
   datamat <- rbind(t(dataObj$x), dataObj$y)
   colnames(datamat) <- dataObj$cluster
-  rownames(datamat) <- c(paste0('x', 0:nx), paste0('gene', 1:nrow(dataObj$y)))
+  rownames(datamat) <- c(paste0('x', 0:nx), paste0('row', 1:nrow(dataObj$y)))
   
   print(datamat)
 }
+
+summary.heritData <- function(dataObj) {
+  cat("Summary of heritData object\n")
+  cat("----------------------------\n")
+  cat("Family:", dataObj$family, "\n\n")
+  cat("Dimensions of data:", dim(dataObj)[1], "rows,", dim(dataObj)[2], "columns\n\n")
+  cat("Number of clusters:", length(unique(dataObj$cluster)), "\n")
+  cat("Cluster sizes:\n")
+  print(table(dataObj$cluster))
+  invisible(dataObj)
+}
+                             
+dim.heritData <- function(datObj) {
+  dim(datObj$y)
+}
+
+head.heritData <- function(x, n = 5L, ...) {
+  head_y <- head(x$y, n)
+  structure(list(x = x$x, y = head_y, family = x$family, cluster = x$cluster), class = "heritData")
+}
+
+tail.heritData <- function(x, n = 5L, ...) {
+   tail_y <- tail(x$y, n)
+   structure(list(x = x$x, y = tail_y, family = x$family, cluster = x$cluster), class = "heritData")
+}
+
 
 # Example
 x <- c(23,24,25,26,29,30,18,22,21,16,18,16,21)
