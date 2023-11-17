@@ -7,22 +7,22 @@ herit.score <- function(data, formula, X, Z=NULL, family = nbinom2, REML = TRUE)
 }
 
 # fit a glmm
-herit.fit <- function(data, formula, family, REML) {
-    modObj <- glmmTMB(formula = formula, data = data, family = family, REML = REML)
-    groupVar <- modObj$modelInfo$grpVar
-    link <- modObj$modelInfo$family$link
-    beta <- fixef(modObj)$cond
-    std <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "stddev")
-    corr <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "correlation")
-    phi <- sigma(modObj)
-    Sigma <- corr*(std %*% std)
-    nfixef <- length(c(beta,phi))
-    nvarcomp_bounded <- length(std)
-    logLike <- as.numeric(logLik(modObj))
-    result <- list("beta"=beta, "Sigma"=Sigma, "phi"=phi, "family"=family, 
-                   "link"=link, "nfixef"=nfixef, "nvarcomp_bounded"=nvarcomp_bounded, "logLikelihood"=logLike, "modObj"=modObj)
-    class(result) <- "heritMod"
-    return(result)
+herit.fit <- function(fixed, random, data, family) {
+    modObj <- GLMMadaptive::mixed_model(fixed, random, data, family)
+    # groupVar <- modObj$modelInfo$grpVar
+    # link <- modObj$modelInfo$family$link
+    # beta <- fixef(modObj)$cond
+    # std <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "stddev")
+    # corr <- attr(VarCorr(modObj)[[c("cond", groupVar)]], "correlation")
+    # phi <- sigma(modObj)
+    # Sigma <- corr*(std %*% std)
+    # nfixef <- length(c(beta,phi))
+    # nvarcomp_bounded <- length(std)
+    # logLike <- as.numeric(logLik(modObj))
+    # result <- list("beta"=beta, "Sigma"=Sigma, "phi"=phi, "family"=family, 
+    #                "link"=link, "nfixef"=nfixef, "nvarcomp_bounded"=nvarcomp_bounded, "logLikelihood"=logLike, "modObj"=modObj)
+    # class(result) <- "heritMod"
+    # return(result)
 }
 
 # Define the generic function
